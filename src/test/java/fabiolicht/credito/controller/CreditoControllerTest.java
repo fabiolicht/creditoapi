@@ -26,7 +26,8 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class CreditoControllerTest {
 
@@ -43,11 +44,11 @@ public class CreditoControllerTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        
+
         // Configura ObjectMapper diretamente com suporte a Java 8 Time (sem usar classes deprecadas)
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        
+
         // Configura MockMvc - o Spring configurará os message converters padrão automaticamente
         // que incluem suporte a Jackson
         mockMvc = MockMvcBuilders.standaloneSetup(creditoController)
@@ -106,8 +107,8 @@ public class CreditoControllerTest {
         when(creditoService.criar(any())).thenReturn(creditoDTO);
 
         mockMvc.perform(post("/api/v1/creditos")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(creditoDTO)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(creditoDTO)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L));
     }
@@ -121,7 +122,7 @@ public class CreditoControllerTest {
                 .thenReturn(creditoAtualizado);
 
         mockMvc.perform(patch("/api/v1/creditos/1/status")
-                .param("novoStatus", "INATIVO"))
+                        .param("novoStatus", "INATIVO"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("INATIVO"));
     }

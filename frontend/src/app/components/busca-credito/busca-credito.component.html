@@ -1,88 +1,88 @@
 <div class="busca-container">
-  <div class="busca-card">
-    <h2>Buscar Crédito</h2>
-    
-    <div class="busca-form">
-      <div class="tipo-busca">
-        <label>
-          <input 
-            type="radio" 
-            name="tipoBusca" 
-            [(ngModel)]="tipoBusca" 
-            value="credito"
-            checked>
-          <span>Número do Crédito</span>
-        </label>
-        <label>
-          <input 
-            type="radio" 
-            name="tipoBusca" 
-            [(ngModel)]="tipoBusca" 
-            value="nfse">
-          <span>Número da NFS-e</span>
-        </label>
-      </div>
+    <div class="busca-card">
+        <h2>Buscar Crédito</h2>
 
-      <div class="input-group">
-        <input 
-          type="text" 
-          [(ngModel)]="termoBusca" 
-          [placeholder]="tipoBusca === 'credito' ? 'Digite o número do crédito' : 'Digite o número da NFS-e'"
-          (keyup.enter)="buscar()"
-          class="input-busca">
-        <div class="button-group">
-          <button (click)="buscar()" [disabled]="loading" class="btn btn-primary">
-            <span *ngIf="!loading">Buscar</span>
-            <span *ngIf="loading">Buscando...</span>
-          </button>
-          <button (click)="limpar()" [disabled]="loading" class="btn btn-secondary">
-            Limpar
-          </button>
+        <div class="busca-form">
+            <div class="tipo-busca">
+                <label>
+                    <input
+                            [(ngModel)]="tipoBusca"
+                            checked
+                            name="tipoBusca"
+                            type="radio"
+                            value="credito">
+                    <span>Número do Crédito</span>
+                </label>
+                <label>
+                    <input
+                            [(ngModel)]="tipoBusca"
+                            name="tipoBusca"
+                            type="radio"
+                            value="nfse">
+                    <span>Número da NFS-e</span>
+                </label>
+            </div>
+
+            <div class="input-group">
+                <input
+                        (keyup.enter)="buscar()"
+                        [(ngModel)]="termoBusca"
+                        [placeholder]="tipoBusca === 'credito' ? 'Digite o número do crédito' : 'Digite o número da NFS-e'"
+                        class="input-busca"
+                        type="text">
+                <div class="button-group">
+                    <button (click)="buscar()" [disabled]="loading" class="btn btn-primary">
+                        <span *ngIf="!loading">Buscar</span>
+                        <span *ngIf="loading">Buscando...</span>
+                    </button>
+                    <button (click)="limpar()" [disabled]="loading" class="btn btn-secondary">
+                        Limpar
+                    </button>
+                </div>
+            </div>
+
+            <div *ngIf="erro" class="erro-message">
+                {{ erro }}
+            </div>
         </div>
-      </div>
-
-      <div *ngIf="erro" class="erro-message">
-        {{ erro }}
-      </div>
     </div>
-  </div>
 
-  <div *ngIf="creditos.length > 0" class="resultados-container">
-    <h3>Resultados da Busca ({{ creditos.length }})</h3>
-    
-    <div class="table-container">
-      <table class="creditos-table">
-        <thead>
-          <tr>
-            <th>Nº Crédito</th>
-            <th>Nº NFS-e</th>
-            <th>Data Constituição</th>
-            <th>Valor ISSQN</th>
-            <th>Tipo</th>
-            <th>Status</th>
-            <th>Descrição</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let credito of creditos">
-            <td>{{ credito.numeroCreditoConstituido }}</td>
-            <td>{{ credito.numeroNFSe }}</td>
-            <td>{{ formatarData(credito.dataConstituicao) }}</td>
-            <td>{{ formatarMoeda(credito.valorISSQN) }}</td>
-            <td>{{ credito.tipoCredito }}</td>
-            <td>
-              <span class="status-badge" [class]="'status-' + credito.status.toLowerCase()">
+    <div *ngIf="creditos.length > 0" class="resultados-container">
+        <h3>Resultados da Busca ({{ creditos.length }})</h3>
+
+        <div class="table-container">
+            <table class="creditos-table">
+                <thead>
+                <tr>
+                    <th>Nº Crédito</th>
+                    <th>Nº NFS-e</th>
+                    <th>Data Constituição</th>
+                    <th>Valor ISSQN</th>
+                    <th>Tipo</th>
+                    <th>Status</th>
+                    <th>Descrição</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let credito of creditos">
+                    <td>{{ credito.numeroCreditoConstituido }}</td>
+                    <td>{{ credito.numeroNFSe }}</td>
+                    <td>{{ formatarData(credito.dataConstituicao) }}</td>
+                    <td>{{ formatarMoeda(credito.valorISSQN) }}</td>
+                    <td>{{ credito.tipoCredito }}</td>
+                    <td>
+              <span [class]="'status-' + credito.status.toLowerCase()" class="status-badge">
                 {{ credito.status }}
               </span>
-            </td>
-            <td>{{ credito.descricao || '-' }}</td>
-          </tr>
-        </tbody>
-      </table>
+                    </td>
+                    <td>{{ credito.descricao || '-' }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-  </div>
 
-  <div *ngIf="nenhumResultado && !loading" class="nenhum-resultado">
-    <p>Nenhum resultado encontrado para a busca realizada.</p>
-  </div>
+    <div *ngIf="nenhumResultado && !loading" class="nenhum-resultado">
+        <p>Nenhum resultado encontrado para a busca realizada.</p>
+    </div>
 </div>

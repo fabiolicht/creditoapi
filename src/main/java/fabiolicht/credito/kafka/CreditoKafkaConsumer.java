@@ -26,7 +26,7 @@ public class CreditoKafkaConsumer {
             if (partes.length >= 2) {
                 String tipoEvento = partes[0];
                 String dados = String.join(":", java.util.Arrays.copyOfRange(partes, 1, partes.length));
-                
+
                 switch (tipoEvento) {
                     case "CREDITO_CRIADO":
                         log.info("Processando criação de crédito: {}", dados);

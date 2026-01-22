@@ -37,7 +37,7 @@ public class CreditoController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "DESC") Sort.Direction direction) {
-        
+
         log.info("GET /api/v1/creditos - page: {}, size: {}, sortBy: {}, direction: {}", page, size, sortBy, direction);
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
         return ResponseEntity.ok(creditoService.buscarTodos(pageable));
@@ -82,7 +82,7 @@ public class CreditoController {
             @PathVariable StatusCredito status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        
+
         log.info("GET /api/v1/creditos/status/{} - Buscando créditos por status", status);
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(creditoService.buscarPorStatus(status, pageable));
@@ -97,7 +97,7 @@ public class CreditoController {
             @PathVariable TipoCredito tipo,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        
+
         log.info("GET /api/v1/creditos/tipo/{} - Buscando créditos por tipo", tipo);
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(creditoService.buscarPorTipo(tipo, pageable));
@@ -121,7 +121,7 @@ public class CreditoController {
     public ResponseEntity<List<CreditoDTO>> buscarPorPeriodo(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
-        
+
         log.info("GET /api/v1/creditos/periodo - dataInicio: {}, dataFim: {}", dataInicio, dataFim);
         return ResponseEntity.ok(creditoService.buscarPorPeriodo(dataInicio, dataFim));
     }
@@ -136,7 +136,7 @@ public class CreditoController {
             @PathVariable StatusCredito status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        
+
         log.info("GET /api/v1/creditos/cnpj/{}/status/{} - page: {}, size: {}", cnpj, status, page, size);
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(creditoService.buscarPorCNPJEStatus(cnpj, status, pageable));
@@ -151,7 +151,7 @@ public class CreditoController {
             @RequestParam String termo,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        
+
         log.info("GET /api/v1/creditos/buscar - termo: {}, page: {}, size: {}", termo, page, size);
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(creditoService.buscarPorTermo(termo, pageable));
@@ -176,7 +176,7 @@ public class CreditoController {
     public ResponseEntity<CreditoDTO> atualizar(
             @PathVariable Long id,
             @RequestBody CreditoDTO creditoDTO) {
-        
+
         log.info("PUT /api/v1/creditos/{} - Atualizando crédito", id);
         return ResponseEntity.ok(creditoService.atualizar(id, creditoDTO));
     }
@@ -189,7 +189,7 @@ public class CreditoController {
     public ResponseEntity<CreditoDTO> alterarStatus(
             @PathVariable Long id,
             @RequestParam StatusCredito novoStatus) {
-        
+
         log.info("PATCH /api/v1/creditos/{}/status - Novo status: {}", id, novoStatus);
         return ResponseEntity.ok(creditoService.alterarStatus(id, novoStatus));
     }

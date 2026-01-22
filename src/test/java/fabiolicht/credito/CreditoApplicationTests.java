@@ -11,8 +11,8 @@ import org.springframework.test.context.ActiveProfiles;
 @Import(TestConfig.class)
 class CreditoApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoads() {
+    }
 
 }

@@ -5,6 +5,7 @@
 ### 1. Instalar Node.js e npm
 
 Certifique-se de ter Node.js 18+ instalado:
+
 ```bash
 node --version
 npm --version
@@ -21,6 +22,7 @@ npm install -g @angular/cli@17
 ### 3. Instalar Dependências
 
 Na pasta `frontend/`:
+
 ```bash
 cd frontend
 npm install

@@ -1,6 +1,7 @@
 # Sistema de Crédito
 
-Sistema completo para gerenciamento de créditos com API REST (Spring Boot 4.0.1) e Frontend Angular para consulta de créditos.
+Sistema completo para gerenciamento de créditos com API REST (Spring Boot 4.0.1) e Frontend Angular para consulta de
+créditos.
 
 ## Arquitetura
 
@@ -24,6 +25,7 @@ docker-compose up -d
 ```
 
 Isso iniciará:
+
 - **PostgreSQL** na porta `5432`
 - **Kafka** na porta `9092`
 - **Kafka UI** na porta `8081` (interface web para gerenciar Kafka)
@@ -63,46 +65,55 @@ A aplicação estará disponível em: **http://localhost:8080**
 ### Base URL: `http://localhost:8080/api/v1/creditos`
 
 #### GET - Listar todos os créditos (com paginação)
+
 ```
 GET /api/v1/creditos?page=0&size=10&sortBy=id&direction=DESC
 ```
 
 #### GET - Buscar crédito por ID
+
 ```
 GET /api/v1/creditos/{id}
 ```
 
 #### GET - Buscar crédito por número
+
 ```
 GET /api/v1/creditos/numero/{numero}
 ```
 
 #### GET - Buscar crédito por NFS-e
+
 ```
 GET /api/v1/creditos/nfse/{nfse}
 ```
 
 #### GET - Buscar créditos por status
+
 ```
 GET /api/v1/creditos/status/{status}?page=0&size=10
 ```
 
 #### GET - Buscar créditos por tipo
+
 ```
 GET /api/v1/creditos/tipo/{tipo}?page=0&size=10
 ```
 
 #### GET - Buscar créditos por CNPJ
+
 ```
 GET /api/v1/creditos/cnpj/{cnpj}
 ```
 
 #### GET - Buscar créditos por período
+
 ```
 GET /api/v1/creditos/periodo?dataInicio=2024-01-01&dataFim=2024-12-31
 ```
 
 #### POST - Criar novo crédito
+
 ```
 POST /api/v1/creditos
 Content-Type: application/json
@@ -121,6 +132,7 @@ Content-Type: application/json
 ```
 
 #### PUT - Atualizar crédito
+
 ```
 PUT /api/v1/creditos/{id}
 Content-Type: application/json
@@ -133,11 +145,13 @@ Content-Type: application/json
 ```
 
 #### PATCH - Alterar status do crédito
+
 ```
 PATCH /api/v1/creditos/{id}/status?novoStatus=INATIVO
 ```
 
 #### DELETE - Deletar crédito
+
 ```
 DELETE /api/v1/creditos/{id}
 ```
@@ -178,15 +192,18 @@ curl http://localhost:8080/api/v1/creditos/1
 ### Usando Swagger/OpenAPI (se configurado)
 
 Se você adicionar o SpringDoc OpenAPI, poderá acessar:
+
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 - API Docs: `http://localhost:8080/v3/api-docs`
 
 ## Serviços Auxiliares
 
 ### Kafka UI
+
 Interface web para gerenciar Kafka: **http://localhost:8081**
 
 ### PostgreSQL
+
 - Host: `localhost`
 - Porta: `5432`
 - Database: `credito_db`
@@ -212,16 +229,19 @@ O frontend está localizado na pasta `frontend/` e permite consultar créditos p
 ### Executar o Frontend
 
 1. Navegue até a pasta do frontend:
+
 ```bash
 cd frontend
 ```
 
 2. Instale as dependências:
+
 ```bash
 npm install
 ```
 
 3. Execute o servidor de desenvolvimento:
+
 ```bash
 npm start
 ```

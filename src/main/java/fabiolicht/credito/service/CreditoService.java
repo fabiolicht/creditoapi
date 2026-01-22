@@ -22,13 +22,11 @@ import java.util.stream.Collectors;
 @Transactional
 public class CreditoService {
 
+    private static final String KAFKA_TOPIC = "creditos-events";
     @Autowired
     private CreditoRepository creditoRepository;
-
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
-
-    private static final String KAFKA_TOPIC = "creditos-events";
 
     /**
      * Busca todos os créditos com paginação
@@ -127,17 +125,17 @@ public class CreditoService {
      */
     public CreditoDTO criar(CreditoDTO creditoDTO) {
         log.info("Criando novo crédito com número: {}", creditoDTO.getNumeroCreditoConstituido());
-        
+
         if (creditoRepository.findByNumeroCreditoConstituido(creditoDTO.getNumeroCreditoConstituido()).isPresent()) {
             throw new RuntimeException("Crédito já existe com este número");
         }
 
         Credito credito = convertToEntity(creditoDTO);
         Credito saved = creditoRepository.save(credito);
-        
+
         // Publica evento no Kafka
         kafkaTemplate.send(KAFKA_TOPIC, "CREDITO_CRIADO:" + saved.getId() + ":" + saved.getNumeroCreditoConstituido());
-        
+
         log.info("Crédito criado com sucesso - ID: {}", saved.getId());
         return convertToDTO(saved);
     }
@@ -147,7 +145,7 @@ public class CreditoService {
      */
     public CreditoDTO atualizar(Long id, CreditoDTO creditoDTO) {
         log.info("Atualizando crédito com ID: {}", id);
-        
+
         Credito credito = creditoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Crédito não encontrado com ID: " + id));
 
@@ -160,10 +158,10 @@ public class CreditoService {
         credito.setCnpjEmpresa(creditoDTO.getCnpjEmpresa());
 
         Credito updated = creditoRepository.save(credito);
-        
+
         // Publica evento no Kafka
         kafkaTemplate.send(KAFKA_TOPIC, "CREDITO_ATUALIZADO:" + updated.getId() + ":" + updated.getNumeroCreditoConstituido());
-        
+
         log.info("Crédito atualizado com sucesso - ID: {}", id);
         return convertToDTO(updated);
     }
@@ -173,15 +171,15 @@ public class CreditoService {
      */
     public void deletar(Long id) {
         log.info("Deletando crédito com ID: {}", id);
-        
+
         Credito credito = creditoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Crédito não encontrado com ID: " + id));
 
         creditoRepository.deleteById(id);
-        
+
         // Publica evento no Kafka
         kafkaTemplate.send(KAFKA_TOPIC, "CREDITO_DELETADO:" + id + ":" + credito.getNumeroCreditoConstituido());
-        
+
         log.info("Crédito deletado com sucesso - ID: {}", id);
     }
 
@@ -190,16 +188,16 @@ public class CreditoService {
      */
     public CreditoDTO alterarStatus(Long id, StatusCredito novoStatus) {
         log.info("Alterando status do crédito ID: {} para: {}", id, novoStatus);
-        
+
         Credito credito = creditoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Crédito não encontrado com ID: " + id));
 
         credito.setStatus(novoStatus);
         Credito updated = creditoRepository.save(credito);
-        
+
         // Publica evento no Kafka
         kafkaTemplate.send(KAFKA_TOPIC, "CREDITO_STATUS_ALTERADO:" + id + ":" + novoStatus);
-        
+
         log.info("Status alterado com sucesso - ID: {}", id);
         return convertToDTO(updated);
     }

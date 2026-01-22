@@ -18,11 +18,13 @@ Frontend em Angular para consulta de créditos através da API REST.
 ## Instalação
 
 1. Instale as dependências:
+
 ```bash
 npm install
 ```
 
 2. Instale o Angular CLI globalmente (se ainda não tiver):
+
 ```bash
 npm install -g @angular/cli
 ```
@@ -32,6 +34,7 @@ npm install -g @angular/cli
 1. Certifique-se de que a API Spring Boot está rodando em `http://localhost:8080`
 
 2. Execute o frontend:
+
 ```bash
 npm start
 ```
@@ -84,6 +87,7 @@ Se a API estiver em outro endereço, altere essa variável.
 ## Responsividade
 
 O frontend é totalmente responsivo e funciona bem em:
+
 - Desktop (1200px+)
 - Tablet (768px - 1199px)
 - Mobile (até 767px)
