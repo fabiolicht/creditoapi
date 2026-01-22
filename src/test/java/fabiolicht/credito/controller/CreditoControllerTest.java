@@ -132,4 +132,120 @@ public class CreditoControllerTest {
         mockMvc.perform(delete("/api/v1/creditos/1"))
                 .andExpect(status().isNoContent());
     }
+
+    @Test
+    public void testBuscarPorNFSe() throws Exception {
+        when(creditoService.buscarPorNFSe("NFS001")).thenReturn(creditoDTO);
+
+        mockMvc.perform(get("/api/v1/creditos/nfse/NFS001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.numeroNFSe").value("NFS001"));
+    }
+
+    @Test
+    public void testBuscarPorStatus() throws Exception {
+        List<CreditoDTO> creditos = Arrays.asList(creditoDTO);
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<CreditoDTO> page = new PageImpl<>(creditos, pageRequest, creditos.size());
+
+        when(creditoService.buscarPorStatus(StatusCredito.ATIVO, any())).thenReturn(page);
+
+        mockMvc.perform(get("/api/v1/creditos/status/ATIVO"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].status").value("ATIVO"));
+    }
+
+    @Test
+    public void testBuscarPorTipo() throws Exception {
+        List<CreditoDTO> creditos = Arrays.asList(creditoDTO);
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<CreditoDTO> page = new PageImpl<>(creditos, pageRequest, creditos.size());
+
+        when(creditoService.buscarPorTipo(TipoCredito.PRINCIPAL, any())).thenReturn(page);
+
+        mockMvc.perform(get("/api/v1/creditos/tipo/PRINCIPAL"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].tipoCredito").value("PRINCIPAL"));
+    }
+
+    @Test
+    public void testBuscarPorCNPJ() throws Exception {
+        List<CreditoDTO> creditos = Arrays.asList(creditoDTO);
+        when(creditoService.buscarPorCNPJ("12345678000100")).thenReturn(creditos);
+
+        mockMvc.perform(get("/api/v1/creditos/cnpj/12345678000100"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].cnpjEmpresa").value("12345678000100"));
+    }
+
+    @Test
+    public void testBuscarPorPeriodo() throws Exception {
+        List<CreditoDTO> creditos = Arrays.asList(creditoDTO);
+        when(creditoService.buscarPorPeriodo(any(), any())).thenReturn(creditos);
+
+        mockMvc.perform(get("/api/v1/creditos/periodo")
+                        .param("dataInicio", "2024-01-01")
+                        .param("dataFim", "2024-12-31"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0]").exists());
+    }
+
+    @Test
+    public void testBuscarPorCNPJEStatus() throws Exception {
+        List<CreditoDTO> creditos = Arrays.asList(creditoDTO);
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<CreditoDTO> page = new PageImpl<>(creditos, pageRequest, creditos.size());
+
+        when(creditoService.buscarPorCNPJEStatus("12345678000100", StatusCredito.ATIVO, any()))
+                .thenReturn(page);
+
+        mockMvc.perform(get("/api/v1/creditos/cnpj/12345678000100/status/ATIVO"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].cnpjEmpresa").value("12345678000100"));
+    }
+
+    @Test
+    public void testBuscarPorTermo() throws Exception {
+        List<CreditoDTO> creditos = Arrays.asList(creditoDTO);
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<CreditoDTO> page = new PageImpl<>(creditos, pageRequest, creditos.size());
+
+        when(creditoService.buscarPorTermo("CR001", any())).thenReturn(page);
+
+        mockMvc.perform(get("/api/v1/creditos/buscar")
+                        .param("termo", "CR001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].numeroCreditoConstituido").value("CR001"));
+    }
+
+    @Test
+    public void testAtualizarCredito() throws Exception {
+        when(creditoService.atualizar(1L, any())).thenReturn(creditoDTO);
+
+        mockMvc.perform(put("/api/v1/creditos/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(creditoDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L));
+    }
+
+    @Test
+    public void testBuscarPorIdNaoEncontrado() throws Exception {
+        when(creditoService.buscarPorId(999L))
+                .thenThrow(new RuntimeException("Crédito não encontrado com ID: 999"));
+
+        mockMvc.perform(get("/api/v1/creditos/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    public void testBuscarPorNumeroNaoEncontrado() throws Exception {
+        when(creditoService.buscarPorNumeroCreditoConstituido("INVALIDO"))
+                .thenThrow(new RuntimeException("Crédito não encontrado com número: INVALIDO"));
+
+        mockMvc.perform(get("/api/v1/creditos/numero/INVALIDO"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").exists());
+    }
 }

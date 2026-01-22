@@ -14,6 +14,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -160,5 +162,149 @@ public class CreditoServiceTest {
 
         assertThrows(RuntimeException.class, () -> creditoService.deletar(99L));
         verify(creditoRepository, never()).deleteById(any());
+    }
+
+    @Test
+    public void testBuscarTodos() {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 10);
+        org.springframework.data.domain.Page<Credito> page = new org.springframework.data.domain.PageImpl<>(
+                Arrays.asList(credito), pageable, 1);
+
+        when(creditoRepository.findAll(any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
+
+        org.springframework.data.domain.Page<CreditoDTO> resultado = creditoService.buscarTodos(pageable);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.getContent().size());
+        verify(creditoRepository, times(1)).findAll(any(org.springframework.data.domain.Pageable.class));
+    }
+
+    @Test
+    public void testBuscarPorStatus() {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 10);
+        org.springframework.data.domain.Page<Credito> page = new org.springframework.data.domain.PageImpl<>(
+                Arrays.asList(credito), pageable, 1);
+
+        when(creditoRepository.findByStatus(StatusCredito.ATIVO, pageable)).thenReturn(page);
+
+        org.springframework.data.domain.Page<CreditoDTO> resultado = creditoService.buscarPorStatus(StatusCredito.ATIVO, pageable);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.getContent().size());
+        verify(creditoRepository, times(1)).findByStatus(StatusCredito.ATIVO, pageable);
+    }
+
+    @Test
+    public void testBuscarPorTipo() {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 10);
+        org.springframework.data.domain.Page<Credito> page = new org.springframework.data.domain.PageImpl<>(
+                Arrays.asList(credito), pageable, 1);
+
+        when(creditoRepository.findByTipoCredito(TipoCredito.PRINCIPAL, pageable)).thenReturn(page);
+
+        org.springframework.data.domain.Page<CreditoDTO> resultado = creditoService.buscarPorTipo(TipoCredito.PRINCIPAL, pageable);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.getContent().size());
+        verify(creditoRepository, times(1)).findByTipoCredito(TipoCredito.PRINCIPAL, pageable);
+    }
+
+    @Test
+    public void testBuscarPorCNPJ() {
+        when(creditoRepository.findByCnpjEmpresa("12345678000100"))
+                .thenReturn(Arrays.asList(credito));
+
+        List<CreditoDTO> resultado = creditoService.buscarPorCNPJ("12345678000100");
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
+        assertEquals("12345678000100", resultado.get(0).getCnpjEmpresa());
+        verify(creditoRepository, times(1)).findByCnpjEmpresa("12345678000100");
+    }
+
+    @Test
+    public void testBuscarPorPeriodo() {
+        LocalDate dataInicio = LocalDate.of(2024, 1, 1);
+        LocalDate dataFim = LocalDate.of(2024, 12, 31);
+
+        when(creditoRepository.findByDataConstituicaoEntre(dataInicio, dataFim))
+                .thenReturn(Arrays.asList(credito));
+
+        List<CreditoDTO> resultado = creditoService.buscarPorPeriodo(dataInicio, dataFim);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
+        verify(creditoRepository, times(1)).findByDataConstituicaoEntre(dataInicio, dataFim);
+    }
+
+    @Test
+    public void testBuscarPorCNPJEStatus() {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 10);
+        org.springframework.data.domain.Page<Credito> page = new org.springframework.data.domain.PageImpl<>(
+                Arrays.asList(credito), pageable, 1);
+
+        when(creditoRepository.findByCnpjEmpresaAndStatus("12345678000100", StatusCredito.ATIVO, pageable))
+                .thenReturn(page);
+
+        org.springframework.data.domain.Page<CreditoDTO> resultado = creditoService.buscarPorCNPJEStatus(
+                "12345678000100", StatusCredito.ATIVO, pageable);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.getContent().size());
+        verify(creditoRepository, times(1)).findByCnpjEmpresaAndStatus("12345678000100", StatusCredito.ATIVO, pageable);
+    }
+
+    @Test
+    public void testBuscarPorTermo() {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 10);
+        org.springframework.data.domain.Page<Credito> page = new org.springframework.data.domain.PageImpl<>(
+                Arrays.asList(credito), pageable, 1);
+
+        when(creditoRepository.buscarPorTermo("CR001", pageable)).thenReturn(page);
+
+        org.springframework.data.domain.Page<CreditoDTO> resultado = creditoService.buscarPorTermo("CR001", pageable);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.getContent().size());
+        verify(creditoRepository, times(1)).buscarPorTermo("CR001", pageable);
+    }
+
+    @Test
+    public void testAtualizarCredito() {
+        when(creditoRepository.findById(1L)).thenReturn(Optional.of(credito));
+        when(creditoRepository.save(any(Credito.class))).thenReturn(credito);
+
+        CreditoDTO resultado = creditoService.atualizar(1L, creditoDTO);
+
+        assertNotNull(resultado);
+        verify(creditoRepository, times(1)).findById(1L);
+        verify(creditoRepository, times(1)).save(any(Credito.class));
+        verify(kafkaTemplate, times(1)).send("creditos-events", "CREDITO_ATUALIZADO:1:CR001");
+    }
+
+    @Test
+    public void testAtualizarCreditoNaoEncontrado() {
+        when(creditoRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> creditoService.atualizar(99L, creditoDTO));
+        verify(creditoRepository, never()).save(any(Credito.class));
+    }
+
+    @Test
+    public void testBuscarPorNFSeNaoEncontrado() {
+        when(creditoRepository.findByNumeroNFSe("INVALIDO"))
+                .thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> creditoService.buscarPorNFSe("INVALIDO"));
+        verify(creditoRepository, times(1)).findByNumeroNFSe("INVALIDO");
+    }
+
+    @Test
+    public void testBuscarPorNumeroNaoEncontrado() {
+        when(creditoRepository.findByNumeroCreditoConstituido("INVALIDO"))
+                .thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> creditoService.buscarPorNumeroCreditoConstituido("INVALIDO"));
+        verify(creditoRepository, times(1)).findByNumeroCreditoConstituido("INVALIDO");
     }
 }

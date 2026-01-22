@@ -1,7 +1,39 @@
 # Sistema de Crédito
 
-Sistema completo para gerenciamento de créditos com API REST (Spring Boot 4.0.1) e Frontend Angular para consulta de
-créditos.
+Sistema completo para gerenciamento de créditos com API REST (Spring Boot 4.0.1) e Frontend Angular para consulta de créditos.
+
+## 🚀 Início Rápido - Acessar a Interface Web
+
+### Passo 1: Iniciar os serviços (PostgreSQL e Kafka)
+```bash
+docker-compose up -d
+```
+
+### Passo 2: Executar a API Backend
+```bash
+./mvnw spring-boot:run
+```
+A API estará disponível em: **http://localhost:8080**
+
+### Passo 3: Executar o Frontend Angular
+```bash
+cd frontend
+npm install    # Primeira vez apenas
+npm start       # Inicia o servidor na porta 4200
+```
+
+### Passo 4: Acessar a Interface Web
+Abra seu navegador e acesse: **http://localhost:4200**
+
+**🎯 A interface permite:**
+- 🔍 Buscar créditos por número do crédito
+- 🔍 Buscar créditos por número da NFS-e
+- 📊 Visualizar resultados em tabela responsiva
+- 📱 Interface otimizada para dispositivos móveis
+
+**📝 Nota**: Certifique-se de que a API Backend está rodando em `http://localhost:8080` antes de usar o frontend.
+
+---
 
 ## Arquitetura
 
@@ -14,9 +46,10 @@ créditos.
 
 - Java 21 ou superior
 - Maven 3.6+
+- Node.js 18+ e npm (para o frontend)
 - Docker e Docker Compose (para executar PostgreSQL e Kafka)
 
-## Como Executar
+## 📋 Guia Completo de Execução
 
 ### 1. Iniciar os serviços (PostgreSQL e Kafka)
 
@@ -30,7 +63,7 @@ Isso iniciará:
 - **Kafka** na porta `9092`
 - **Kafka UI** na porta `8081` (interface web para gerenciar Kafka)
 
-### 2. Executar a aplicação Spring Boot
+### 2. Executar a aplicação Spring Boot (Backend API)
 
 #### Opção A: Usando Maven
 
@@ -56,9 +89,27 @@ java -jar target/credito-0.0.1-SNAPSHOT.war
 1. Abra a classe `CreditoApplication.java`
 2. Clique com o botão direito e selecione `Run 'CreditoApplication'`
 
-### 3. Acessar a API
+### 3. Verificar se a API está rodando
 
-A aplicação estará disponível em: **http://localhost:8080**
+A API estará disponível em: **http://localhost:8080**
+
+Teste se está funcionando:
+```bash
+curl http://localhost:8080/api/v1/creditos
+```
+
+### 4. Executar o Frontend Angular (Interface Web)
+
+Veja a seção [Interface Web (Frontend Angular)](#-interface-web-frontend-angular) acima para instruções detalhadas.
+
+**Resumo rápido:**
+```bash
+cd frontend
+npm install    # Primeira vez apenas
+npm start       # Inicia o servidor na porta 4200
+```
+
+Acesse: **http://localhost:4200**
 
 ## Endpoints da API
 
@@ -208,7 +259,7 @@ Interface web para gerenciar Kafka: **http://localhost:8081**
 - Porta: `5432`
 - Database: `credito_db`
 - Usuário: `postgres`
-- Senha: `postgres`
+- Senha: `z1x2c3v4`
 
 ## Parar os Serviços
 
@@ -222,41 +273,90 @@ Para remover também os volumes (dados do banco):
 docker-compose down -v
 ```
 
-## Frontend Angular
+## 🌐 Interface Web (Frontend Angular)
 
-O frontend está localizado na pasta `frontend/` e permite consultar créditos por número do crédito ou número da NFS-e.
+### Como Acessar a Interface Web
 
-### Executar o Frontend
+A interface web está disponível após executar os seguintes passos:
 
-1. Navegue até a pasta do frontend:
+#### 1. Instalar Dependências (primeira vez apenas)
 
 ```bash
 cd frontend
-```
-
-2. Instale as dependências:
-
-```bash
 npm install
 ```
 
-3. Execute o servidor de desenvolvimento:
+**Nota**: Se você ainda não tem o Angular CLI instalado globalmente:
+```bash
+npm install -g @angular/cli@17
+```
+
+#### 2. Executar o Frontend
 
 ```bash
 npm start
 ```
 
-4. Acesse no navegador: **http://localhost:4200**
+ou
 
-### Funcionalidades do Frontend
+```bash
+ng serve
+```
 
-- ✅ Busca por número do crédito
-- ✅ Busca por número da NFS-e
-- ✅ Exibição dos resultados em tabela responsiva
-- ✅ Design adaptado para dispositivos móveis
-- ✅ Interface moderna e intuitiva
+#### 3. Acessar no Navegador
 
-Para mais detalhes, consulte o [README do Frontend](frontend/README.md).
+Abra seu navegador e acesse: **http://localhost:4200**
+
+### ⚠️ Importante
+
+- Certifique-se de que a **API Backend está rodando** em `http://localhost:8080` antes de usar o frontend
+- O frontend se conecta automaticamente à API através de um proxy configurado
+
+### Funcionalidades da Interface Web
+
+- ✅ **Busca por número do crédito**: Digite o número do crédito e clique em buscar
+- ✅ **Busca por número da NFS-e**: Selecione "Número da NFS-e" e digite o número
+- ✅ **Tabela de resultados**: Exibe todos os dados do crédito encontrado
+- ✅ **Design responsivo**: Funciona perfeitamente em celulares, tablets e desktops
+- ✅ **Interface moderna**: Design limpo e intuitivo
+- ✅ **Tratamento de erros**: Mensagens claras quando não encontra resultados
+
+### Estrutura da Interface
+
+A interface possui:
+- **Cabeçalho**: Título da aplicação
+- **Formulário de busca**: 
+  - Seleção do tipo de busca (Crédito ou NFS-e)
+  - Campo de entrada
+  - Botões de Buscar e Limpar
+- **Tabela de resultados**: Exibe os dados quando encontra resultados
+- **Mensagens**: Feedback visual para o usuário
+
+### Características da Interface
+
+A interface possui:
+- Layout responsivo que se adapta ao tamanho da tela
+- Cores e badges para status dos créditos (Ativo, Inativo, Pendente, etc.)
+- Formatação de datas e valores monetários em português (BRL)
+- Mensagens de erro amigáveis
+- Loading states durante as buscas
+
+### Troubleshooting
+
+**Problema**: A interface não encontra créditos
+- ✅ Verifique se a API está rodando em `http://localhost:8080`
+- ✅ Teste a API diretamente: `curl http://localhost:8080/api/v1/creditos`
+- ✅ Verifique o console do navegador (F12) para erros
+
+**Problema**: Erro de CORS
+- ✅ O proxy está configurado automaticamente no `proxy.conf.json`
+- ✅ Certifique-se de usar `npm start` (não `ng serve` diretamente)
+
+**Problema**: Porta 4200 já em uso
+- ✅ O Angular perguntará se deseja usar outra porta
+- ✅ Ou pare o processo na porta 4200: `lsof -ti:4200 | xargs kill`
+
+Para mais detalhes técnicos, consulte o [README do Frontend](frontend/README.md).
 
 ## Estrutura do Projeto
 
